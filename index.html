@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student Information Form</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<h2>Student Information Form</h2>
+
+<form id="studentForm">
+  <label for="fullName">Full Name:</label>
+  <input type="text" id="fullName" name="fullName" maxlength="50" required><br><br>
+
+  <label for="rollNumber">Roll Number:</label>
+  <input type="text" id="rollNumber" name="rollNumber" pattern="[A-Za-z0-9]{8}[A-Za-z]{1}" required><br><br>
+
+  <div id="subjectsContainer">
+    <div class="subject-row">
+      <label for="subject1">Subject:</label>
+      <input type="text" class="subject" name="subject[]" required>
+      <label for="outOf">Out of:</label>
+      <select name="outOf[]" class="outOf" required>
+        <option value="50">50</option>
+        <option value="100">100</option>
+      </select>
+      <label for="marks">Obtained Marks:</label>
+      <input type="number" class="marks" name="marks[]" min="0" required>
+      <button type="button" class="removeSubject">Remove Subject</button>
+    </div>
+  </div>
+
+  <button type="button" id="addSubject">Add More Subject</button><br><br>
+
+  <button type="submit">Submit</button>
+</form>
+
+<script>
+
+const fullName = document.getElementById('fullName').value;
+window.location.href = `score.html?fullName=${encodeURIComponent(fullName)}`;
+
+  // JavaScript
+  document.getElementById('addSubject').addEventListener('click', function() {
+    const subjectsContainer = document.getElementById('subjectsContainer');
+    const subjectRow = document.createElement('div');
+    subjectRow.classList.add('subject-row');
+    subjectRow.innerHTML = `
+      <label for="subject">Subject:</label>
+      <input type="text" class="subject" name="subject[]" required>
+      <label for="outOf">Out of:</label>
+      <select name="outOf[]" class="outOf" required>
+        <option value="50">50</option>
+        <option value="100">100</option>
+      </select>
+      <label for="marks">Obtained Marks:</label>
+      <input type="number" class="marks" name="marks[]" min="0" required>
+      <button type="button" class="removeSubject">Remove Subject</button>
+    `;
+    subjectsContainer.appendChild(subjectRow);
+  });
+
+  document.getElementById('subjectsContainer').addEventListener('click', function(event) {
+    if (event.target.classList.contains('removeSubject')) {
+      event.target.parentElement.remove();
+    }
+  });
+
+  document.getElementById('studentForm').addEventListener('submit', function(event) {
+    event.preventDefault(); // Prevent form submission
+    const formData = {
+      fullName: document.getElementById('fullName').value,
+      rollNumber: document.getElementById('rollNumber').value,
+      subjects: []
+    };
+
+    const subjectInputs = document.querySelectorAll('.subject');
+    const outOfInputs = document.querySelectorAll('.outOf');
+    const marksInputs = document.querySelectorAll('.marks');
+
+    subjectInputs.forEach((subjectInput, index) => {
+      formData.subjects.push({
+        name: subjectInput.value,
+        outOf: outOfInputs[index].value,
+        obtained: marksInputs[index].value
+      });
+    });
+
+    localStorage.setItem('formData', JSON.stringify(formData));
+    window.location.href = 'score.html'; // Redirect to score.html
+  });
+</script>
+
+</body>
+</html>
